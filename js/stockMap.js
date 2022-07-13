@@ -113,7 +113,8 @@ function getWarehouses(){ //Download warehouse structure data
   console.log(window.location.protocol);
   if(window.location.protocol!=='file:'){//for real data remote request
       $.get("/WebGetLocationsPlaces.hal", function( data ) {
-        $( ".result" ).html( data );
+        //$( ".result" ).html( data );
+        console.log(data);
         edata = data;
       });
     
