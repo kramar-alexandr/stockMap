@@ -1,8 +1,7 @@
 
 
-let warehouses = [];
 let warehouse = {};
-let posdepth = 2;
+let posdepth = 2; //depth of each row
 let posSize = 15;
 let posPadding = 3;
 let maxrows = 0;
@@ -10,6 +9,8 @@ let maxlevels = 0;
 let maxx = 0;
 let maxy = 0;
 let colors = ['#0d6efd','#ffc107','#0dcaf0','#20c997','#198754','#ffc107','#fd7e14'];
+let activePos;//data on selected position
+
 
 width = $(window).width();
 height = $(window).height(); 
@@ -26,7 +27,14 @@ const hex = (x) => {
   return x.toString(16).padStart(2, '0')
 };
 
+const fillColor = (d) => {
+    k = 255/maxlevels*d.level;
+    return "#" + hex(k) + hex(k) + hex(k)};
+const fillRevertColor = (d) => {
+      k = 255-255/maxlevels*d.level;
+      return "#" + hex(k) + hex(k) + hex(k)};
 
+    
 function fillElements(position){//draw elements
   pos.attr("fill", "#444")
     .attr("cursor", "pointer")
@@ -36,24 +44,20 @@ function fillElements(position){//draw elements
     })
     .enter()
     .append("g")
-    .append("rect")
     .on("click", clicked)
+    .append("rect")
     .attr("x", d=>d.globalX*(posSize+posPadding)+((d.row-1)*posSize))
     .attr("y", d=>d.globalY*(posSize+posPadding)*4)
     .attr("width", posSize)
     .attr("height", posSize*4)
     .attr("stroke", "black")
-    .attr("fill", d=>{
-      k = 255/maxlevels*d.level;
-      return "#" + hex(k) + hex(k) + hex(k)})
+    .attr("fill", d=>{return fillColor(d)})
     .append("title")
     .text(d=>d.name);
 
     pos.selectAll("g")
     .append("text")
-    .attr("fill", d=>{
-      k = 255 - 255/maxlevels*d.level;
-      return "#" + hex(k) + hex(k) + hex(k)})
+    .attr("fill", d=>{return fillRevertColor(d)})
     .attr("font-size","10")
     .attr("dy", ".35em")
     .attr("text-anchor", "start")
@@ -80,8 +84,6 @@ function prepareData(data){//prepare data - add cell coordinates
   data.locations.forEach(element => {
     if(element.location==="MAIN"){
       position = element.places;
-      
-
       for(i=0;i<position.length;i++){
         position[i].row = position[i].name[0].charCodeAt(0)-64;
         if(maxrows<position[i].row){
@@ -138,8 +140,19 @@ function resize() {
 
 function clicked(event, d) {
   event.stopPropagation();
-  pos.transition().style("fill", "null");
-  d3.select(this).transition().style("fill", "red");
+  pos.transition()
+  .selectAll("g rect")
+  .style("fill", d=>{return fillColor(d)});
+  pos.transition()
+  .selectAll("g text")
+  .attr("fill",d=>{
+    return fillRevertColor(d)});
+
+  d3.select(this).select("text").transition().attr("fill", "white");
+  d3.select(this).select("rect").transition().style("fill", "red");
+  
+  activePos = d3.select(this).data();
+
   d3.pointer(event, svg.node())
 }
 
