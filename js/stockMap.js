@@ -112,7 +112,7 @@ function getWarehouses(){ //Download warehouse structure data
   let edata;
   console.log(window.location.protocol);
   if(window.location.protocol!=='file:'){//for real data remote request
-      $.get("WebGetLocationsPlaces.hal", function( data ) {
+      $.get("/WebGetLocationsPlaces.hal", function( data ) {
         //$( ".result" ).html( data );
         edata = data;
       });
