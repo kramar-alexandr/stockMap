@@ -128,7 +128,9 @@ function getWarehouses(){ //Download warehouse structure data
 }
 
 function colorElements(stockMov){
-  console.log(stockMov);
+  console.log(stockMov.items);
+  const update = pos.selectAll("rect").data(stockMov.items,d=> d.toplace);
+  console.log(update);
 }
 
 function getStockMovData(smNum){ //Download warehouse structure data
